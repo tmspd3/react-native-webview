@@ -893,6 +893,18 @@ static NSDictionary* customCertificatesForHost;
   decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
                   decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
+  // pass webview에서 itune에 접속하게 하기 위해서 수정
+  NSURL *url = navigationAction.request.URL;
+  NSString *urlString = (url) ? url.absoluteString : @"";
+  // iTunes: App Store link
+  //For example, wechat download link: https://itunes.apple.com/cn/app/id414478124? MT = 8
+  if ([urlString containsString:@"//itunes.apple.com/"]) {
+    [RCTSharedApplication() openURL:url];
+    decisionHandler(WKNavigationActionPolicyCancel);
+    return;
+  }
+
+
   static NSDictionary<NSNumber *, NSString *> *navigationTypes;
   static dispatch_once_t onceToken;
 
